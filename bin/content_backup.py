@@ -51,7 +51,7 @@ PARSER.add_argument("-c", metavar='<cfg>', dest='cfgfile', \
 PARSER.add_argument("-i", metavar='<id>', dest='CONTENTID', \
                     help="Specify config file")
 
-ARGS = PARSER.parse_args()
+ARGS = PARSER.parse_args(args=None if sys.argv[1:] else ['--help'])
 
 if ARGS.MY_SECRET:
     (MY_APINAME, MY_APISECRET) = ARGS.MY_SECRET.split(':')
