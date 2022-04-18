@@ -64,7 +64,7 @@ PARSER.add_argument("-v", type=int, default=0, metavar='<verbose>', \
 
 ARGS = PARSER.parse_args()
 
-DELAY_TIME = .55555
+DELAY_TIME = .5
 
 CONTENTMAP = dict()
 
