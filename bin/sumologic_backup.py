@@ -216,7 +216,7 @@ def create_manifest(manifestdir):
             my_backupname = CONTENTMAP[content_item]["backupname"]
             my_backuppath = CONTENTMAP[content_item]["backuppath"]
 
-            manifestobject.write('{},{},{},{},{},{},{}\n'.format(uid_myself, uid_parent, \
+            manifestobject.write('{},{},{},\"{}\",\"{}\",{},{}\n'.format(uid_myself, uid_parent, \
                                  my_type, my_name, my_path, my_backupname, my_backuppath))
 
 def create_content_map(source):
