@@ -62,11 +62,7 @@ Scripts and Functions:
 
     5. ./bin/sumologic-backup.py -t <target>
 
-       Provide either the objectID, the partial name of the content, or "Personal" or "Global"
-
-       *   objectID - backup only one specific content item
-
-       *   <name> - backup all content items that match that name string
+       Provide either "Personal" or "Global"
 
        *   "Personal" - backup all your personal folder
 
@@ -77,7 +73,7 @@ Uncoming Features:
 
 * Provide fixups for the paths and organization ID
 
-* Provide a manifest of the files backed up, and their paths, and dates
+* Provide selective backups based on ID or name/string
 
 License
 =======
