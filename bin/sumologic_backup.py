@@ -49,9 +49,6 @@ PARSER.add_argument("-a", metavar='<secret>', dest='MY_SECRET', \
 PARSER.add_argument("-k", metavar='<client>', dest='MY_CLIENT', \
                     help="set key (format: <site>_<orgid>) ")
 
-PARSER.add_argument("-e", metavar='<endpoint>', dest='MY_ENDPOINT', \
-                    help="set endpoint (format: <endpoint>) ")
-
 PARSER.add_argument("-c", metavar='<configfile>', dest='CONFIG', \
                     help="Specify config file")
 
