@@ -44,23 +44,23 @@ Script Names and Purposes
 
 Scripts and Functions:
 
-    1. ./bin/sumologic-backup.py 
+    1. ./bin/sumologic_backup.py 
 
        the script that exports content
 
-    2. ./bin/sumologic-backup.py -h
+    2. ./bin/sumologic_backup.py -h
   
        print a usage message and exit
 
-    3. ./bin/sumologic-backup.py -c <cfgile>
+    3. ./bin/sumologic_backup.py -c <cfgile>
 
        use a configuration file for the API key name, string, API endpoint, and organization ID
 
-    4. ./bin/sumologic-backup.py -v <integer>
+    4. ./bin/sumologic_backup.py -v <integer>
 
        provide increasingly verbose output on the script execution
 
-    5. ./bin/sumologic-backup.py -t <target>
+    5. ./bin/sumologic_backup.py -t <target>
 
        Provide either "Personal" or "Global"
 
