@@ -226,13 +226,39 @@ def create_content_map(source):
     """
 
     if ARGS.BACKUPTARGET == 'Personal':
+
         content_list = source.get_myfolders()
         parent_base_path = content_list['id']
+        uid_myself = content_list['id']
+        uid_parent = content_list['parentId']
         parent_name = "/" + content_list['name']
+
+        CONTENTMAP[uid_myself] = dict()
+        CONTENTMAP[uid_myself]["parent"] = uid_parent
+        CONTENTMAP[uid_myself]["myself"] = uid_myself
+        CONTENTMAP[uid_myself]["name"] = parent_name
+        CONTENTMAP[uid_myself]["path"] = "/" + parent_name
+        CONTENTMAP[uid_myself]["backupname"] = parent_name
+        CONTENTMAP[uid_myself]["backuppath"] = parent_base_path
+        CONTENTMAP[uid_myself]["type"] = 'Folder'
+
     else:
+
         content_list = source.get_globalfolders()
         parent_base_path = content_list['id']
+        uid_myself = content_list['id']
+        uid_parent = content_list['parentId']
         parent_name = "/" + 'Global'
+
+        CONTENTMAP[uid_myself] = dict()
+        CONTENTMAP[uid_myself]["parent"] = uid_parent
+        CONTENTMAP[uid_myself]["myself"] = uid_myself
+        CONTENTMAP[uid_myself]["name"] = 'Global'
+        CONTENTMAP[uid_myself]["path"] = "/" + 'Global'
+        CONTENTMAP[uid_myself]["backupname"] = 'Global'
+        CONTENTMAP[uid_myself]["backuppath"] = parent_base_path
+        CONTENTMAP[uid_myself]["type"] = 'Folder'
+
 
     for child in content_list['children']:
         build_details(source, parent_name, parent_base_path, child)
