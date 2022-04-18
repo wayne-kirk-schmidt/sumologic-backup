@@ -31,7 +31,9 @@ import datetime
 import argparse
 import configparser
 import http
+import zipfile
 import requests
+
 sys.dont_write_bytecode = 1
 
 MY_CFG = 'undefined'
@@ -61,6 +63,9 @@ PARSER.add_argument("-o", metavar='<outputdir>', dest='OUTPUTDIR', \
 
 PARSER.add_argument("-v", type=int, default=0, metavar='<verbose>', \
                     dest='verbose', help="increase verbosity")
+
+PARSER.add_argument("-z", default=False, metavar='<zipfile>', \
+                    dest='ZIPFILE', help="create zipfile (default: False)")
 
 ARGS = PARSER.parse_args()
 
@@ -204,7 +209,6 @@ def create_manifest(manifestdir):
     """
     Now display the output we want from the CONTENTMAP data structure we made.
     """
-    ### manifestname = '{}.{}.{}.csv'.format(REPORTTAG, DATESTAMP, TIMESTAMP)
     manifestname = '{}.csv'.format(REPORTTAG)
     manifestfile = os.path.join(manifestdir, manifestname)
 
@@ -284,6 +288,20 @@ def backup_content(source,backupdir):
         with open (backuptarget, "w") as backupobject:
             backupobject.write(json.dumps(exportresult) + '\n')
 
+def create_zipfile(backupdir):
+    """
+    Create the zipfile from the backup directory
+    """
+    targetzipfile = '{}/{}.{}.{}.zip'.format(backupdir, REPORTTAG, DATESTAMP, TIMESTAMP )
+
+    if ARGS.verbose > 4:
+        print('Creating: zipfile {}'.format(targetzipfile))
+
+    with zipfile.ZipFile(targetzipfile, 'w') as zipobject:
+        for foldername, _subfolders, filenames in os.walk(backupdir):
+            for filename in filenames:
+                filepath = os.path.join(foldername, filename)
+                zipobject.write(filepath, os.path.basename(filepath))
 
 def main():
     """
@@ -320,6 +338,9 @@ def main():
         print("step{}: - Backing up content per manifest file".format('6'))
 
     backup_content(source, backups)
+
+    if ARGS.ZIPFILE is not False:
+        create_zipfile(ARGS.OUTPUTDIR)
 
 ### class ###
 
