@@ -96,11 +96,6 @@ def resolve_option_variables():
         os.environ['SUMO_LOC'] = deployment
         os.environ['SUMO_ORG'] = organizationid
 
-    if ARGS.MY_ENDPOINT:
-        os.environ['SUMO_END'] = ARGS.MY_ENDPOINT
-    else:
-        os.environ['SUMO_END'] = os.environ['SUMO_LOC']
-
 def resolve_config_variables():
     """
     Validates and confirms all necessary variables for the script
@@ -148,14 +143,13 @@ def initialize_variables():
     try:
         my_uid = os.environ['SUMO_UID']
         my_key = os.environ['SUMO_KEY']
-        my_end = os.environ['SUMO_END']
 
     except KeyError as myerror:
         print('Environment Variable Not Set :: {} '.format(myerror.args[0]))
 
-    return my_uid, my_key, my_end
+    return my_uid, my_key
 
-( sumo_uid, sumo_key, sumo_end ) = initialize_variables()
+( sumo_uid, sumo_key ) = initialize_variables()
 
 def create_backup_directory():
     """
@@ -309,7 +303,7 @@ def main():
     if ARGS.verbose > 3:
         print("step{}: - Authenticating".format('1'))
 
-    source = SumoApiClient(sumo_uid, sumo_key, sumo_end)
+    source = SumoApiClient(sumo_uid, sumo_key)
 
     if ARGS.verbose > 3:
         print("step{}: - Creating Supporting directories".format('2'))
