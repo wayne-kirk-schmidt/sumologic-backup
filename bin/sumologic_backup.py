@@ -58,7 +58,7 @@ PARSER.add_argument("-t", metavar='<target>', dest='BACKUPTARGET', \
 PARSER.add_argument("-o", metavar='<outputdir>', dest='OUTPUTDIR', \
                     default='/var/tmp/sumologic-backup', help="Specify output dir")
 
-PARSER.add_argument("-v", type=int, default=0, metavar='<verbose>', \
+PARSER.add_argument("-v", type=int, default=4, metavar='<verbose>', \
                     dest='verbose', help="increase verbosity")
 
 PARSER.add_argument("-z", default=False, metavar='<zipfile>', \
@@ -327,32 +327,32 @@ def main():
     """
 
     if ARGS.verbose > 3:
-        print("step{}: - Authenticating".format('1'))
+        print("Step-001: - Authenticating")
 
     source = SumoApiClient(sumo_uid, sumo_key)
 
     if ARGS.verbose > 3:
-        print("step{}: - Creating Supporting directories".format('2'))
+        print("Step-002: - Creating Supporting directories")
 
     (backups, reports ) = create_backup_directory()
 
     if ARGS.verbose > 3:
-        print("step{}: - Discovering content targets".format('3'))
+        print("Step-003: - Discovering content targets")
 
     _content_manifest = create_content_map(source)
 
     if ARGS.verbose > 3:
-        print("step{}: - Persisting content manifest".format('4'))
+        print("Step-004: - Persisting content manifest")
 
     create_manifest(reports)
 
     if ARGS.verbose > 3:
-        print("step{}: - Create intermediate backup folders".format('5'))
+        print("Step-005: - Create intermediate backup folders")
 
     create_backup_folders(backups)
 
     if ARGS.verbose > 3:
-        print("step{}: - Backing up content per manifest file".format('6'))
+        print("Step-006: - Backing up content per manifest file")
 
     backup_content(source, backups)
 
