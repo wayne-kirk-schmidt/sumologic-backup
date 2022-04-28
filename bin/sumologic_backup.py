@@ -219,6 +219,31 @@ def create_manifest(manifestdir):
             manifestobject.write('{},{},{},\"{}\",\"{}\",{},{}\n'.format(uid_myself, uid_parent, \
                                  my_type, my_name, my_path, my_backupname, my_backuppath))
 
+def create_personal_folder_content_map(source):
+    """
+    This builds the content map for the 'Personal' folder
+    """
+
+    content_list = source.get_myfolders()
+
+    parent_name = "/" + content_list['name']
+    parent_base_path = content_list['id']
+    uid_myself = content_list['id']
+    uid_parent = content_list['parentId']
+
+    CONTENTMAP[uid_myself] = dict()
+    CONTENTMAP[uid_myself]["parent"] = uid_parent
+    CONTENTMAP[uid_myself]["myself"] = uid_myself
+    CONTENTMAP[uid_myself]["name"] = parent_name
+    CONTENTMAP[uid_myself]["path"] = "/" + parent_name
+    CONTENTMAP[uid_myself]["backupname"] = parent_name
+    CONTENTMAP[uid_myself]["backuppath"] = parent_base_path
+    CONTENTMAP[uid_myself]["type"] = 'Folder'
+
+    for child in content_list['children']:
+        build_details(source, parent_name, parent_base_path, child)
+
+
 def create_content_map(source):
     """
     This will collect the information on object for sumologic and then collect that into a list.
@@ -227,41 +252,43 @@ def create_content_map(source):
 
     if ARGS.BACKUPTARGET == 'Personal':
 
-        content_list = source.get_myfolders()
-        parent_base_path = content_list['id']
-        uid_myself = content_list['id']
-        uid_parent = content_list['parentId']
-        parent_name = "/" + content_list['name']
-
-        CONTENTMAP[uid_myself] = dict()
-        CONTENTMAP[uid_myself]["parent"] = uid_parent
-        CONTENTMAP[uid_myself]["myself"] = uid_myself
-        CONTENTMAP[uid_myself]["name"] = parent_name
-        CONTENTMAP[uid_myself]["path"] = "/" + parent_name
-        CONTENTMAP[uid_myself]["backupname"] = parent_name
-        CONTENTMAP[uid_myself]["backuppath"] = parent_base_path
-        CONTENTMAP[uid_myself]["type"] = 'Folder'
+        create_personal_folder_content_map(source)
 
     else:
 
-        content_list = source.get_globalfolders()
-        parent_base_path = content_list['id']
-        uid_myself = content_list['id']
-        uid_parent = content_list['parentId']
-        parent_name = "/" + 'Global'
+        gfolder_job = source.get_globalfolder_job()['id']
+        gfolder_status = source.get_globalfolder_job_status(gfolder_job)['status']
 
-        CONTENTMAP[uid_myself] = dict()
-        CONTENTMAP[uid_myself]["parent"] = uid_parent
-        CONTENTMAP[uid_myself]["myself"] = uid_myself
-        CONTENTMAP[uid_myself]["name"] = 'Global'
-        CONTENTMAP[uid_myself]["path"] = "/" + 'Global'
-        CONTENTMAP[uid_myself]["backupname"] = 'Global'
-        CONTENTMAP[uid_myself]["backuppath"] = parent_base_path
-        CONTENTMAP[uid_myself]["type"] = 'Folder'
+        while gfolder_status != 'Success':
+            gfolder_status = source.get_globalfolder_job_status(gfolder_job)['status']
 
+        gfolder_result = source.get_globalfolder_job_result(gfolder_job)
+        for child in gfolder_result['data']:
+            print(child)
+            if child['name'] == 'Personal':
+                create_personal_folder_content_map(source)
+            else:
+                if child['itemType'] == 'Folder':
+                    parent_name = ""
+                    parent_base_path = child['id']
+                    child_name = child['name']
+                    uid_myself = child['id']
+                    uid_parent = child['parentId']
+                    build_details(source, parent_name, parent_base_path, child)
+                else:
+                    uid_myself = child['id']
+                    uid_parent = child['parentId']
+                    my_name = child['name']
+                    my_type = child['itemType']
 
-    for child in content_list['children']:
-        build_details(source, parent_name, parent_base_path, child)
+                    CONTENTMAP[uid_myself] = dict()
+                    CONTENTMAP[uid_myself]["parent"] = uid_parent
+                    CONTENTMAP[uid_myself]["myself"] = uid_myself
+                    CONTENTMAP[uid_myself]["name"] = my_name
+                    CONTENTMAP[uid_myself]["path"] = my_name
+                    CONTENTMAP[uid_myself]["backupname"] = uid_myself
+                    CONTENTMAP[uid_myself]["backuppath"] = uid_myself
+                    CONTENTMAP[uid_myself]["type"] = my_type
 
     return CONTENTMAP
 
@@ -301,6 +328,9 @@ def backup_content(source,backupdir):
 
         if ARGS.verbose > 4:
             print('Exporting: {} - {}'.format(contentid, backuptarget))
+
+        ##### print(exportresult)
+        ##### time.sleep(1)
 
         with open (backuptarget, "w") as backupobject:
             backupobject.write(json.dumps(exportresult) + '\n')
@@ -446,7 +476,7 @@ class SumoApiClient():
 
     def get_myfolders(self):
         """
-        Using an HTTP client, this uses a GET to retrieve all connection information.
+        Using an HTTP client, this uses a GET to retrieve all information.
         """
         url = "/v2/content/folders/personal/"
         body = self.get(url).text
@@ -455,28 +485,39 @@ class SumoApiClient():
 
     def get_myfolder(self, myself):
         """
-        Using an HTTP client, this uses a GET to retrieve single connection information.
+        Using an HTTP client, this uses a GET to retrieve single information.
         """
+        time.sleep(DELAY_TIME)
         url = "/v2/content/folders/" + str(myself)
         body = self.get(url).text
         results = json.loads(body)
-        time.sleep(DELAY_TIME)
         return results
 
-    def get_globalfolders(self):
+    def get_globalfolder_job(self):
         """
-        Using an HTTP client, this uses a GET to retrieve all connection information.
+        Using an HTTP client, this uses a GET to retrieve all information.
         """
         url = "/v2/content/folders/global"
         body = self.get(url).text
         results = json.loads(body)
         return results
 
-    def get_globalfolder(self, myself):
+    def get_globalfolder_job_status(self, myself):
         """
-        Using an HTTP client, this uses a GET to retrieve single connection information.
+        Using an HTTP client, this uses a GET to retrieve single information.
         """
-        url = "/v2/content/folders/global/" + str(myself)
+        time.sleep(DELAY_TIME)
+        url = "/v2/content/folders/global/" + str(myself) + "/status"
+        body = self.get(url).text
+        results = json.loads(body)
+        return results
+
+    def get_globalfolder_job_result(self, myself):
+        """
+        Using an HTTP client, this uses a GET to retrieve single information.
+        """
+        time.sleep(DELAY_TIME)
+        url = "/v2/content/folders/global/" + str(myself) + "/result"
         body = self.get(url).text
         results = json.loads(body)
         return results
@@ -485,6 +526,7 @@ class SumoApiClient():
         """
         Using an HTTP client, this starts an export job by passing in the content ID
         """
+        time.sleep(DELAY_TIME)
         url = "/v2/content/" + str(myself) + "/export"
         body = self.post(url, data=str(myself)).text
         results = json.loads(body)
@@ -494,8 +536,8 @@ class SumoApiClient():
         """
         Using an HTTP client, this starts an export job by passing in the content ID
         """
-        url = "/v2/content/" + str(myself) + "/export/" + str(jobid) + "/status"
         time.sleep(DELAY_TIME)
+        url = "/v2/content/" + str(myself) + "/export/" + str(jobid) + "/status"
         body = self.get(url).text
         results = json.loads(body)
         return results
@@ -504,8 +546,8 @@ class SumoApiClient():
         """
         Using an HTTP client, this starts an export job by passing in the content ID
         """
-        url = "/v2/content/" + str(myself) + "/export/" + str(jobid) + "/result"
         time.sleep(DELAY_TIME)
+        url = "/v2/content/" + str(myself) + "/export/" + str(jobid) + "/result"
         body = self.get(url).text
         results = json.loads(body)
         return results
