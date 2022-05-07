@@ -1,9 +1,16 @@
 Sumo Logic Backup
 =================
 
-In the age of DevOps, why not treat your Sumo Logic content as code?
+In the age of DevOps disciplines, why not treat your Sumo Logic content as code?
 
-These tools enable you to extract content supporting a Dev Ops mindset.
+These tools enable you to integrate with your source code repository, so you can do just that.
+
+Business Case
+=============
+
+Curious what was the business goals we wanted to solve?
+
+Please read on in our [writeup](doc/writeup.md)!
 
 Installing the Scripts
 =======================
@@ -78,14 +85,16 @@ Uncoming Features:
 License
 =======
 
-Copyright 2022 Wayne Kirk Schmidt
+Copyright 2020 Wayne Kirk Schmidt
+https://www.linkedin.com/in/waynekirkschmidt
 
-Licensed under the GNU GPL License (the "License");
-you may not use this file except in compliance with the License.
+Licensed under the Apache 2.0 License (the "License");
+
+You may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    license-name   GNU GPL
-    license-url    http://www.gnu.org/licenses/gpl.html
+    license-name   APACHE 2.0
+    license-url    http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -98,8 +107,8 @@ Support
 
 Feel free to e-mail me with issues to: 
 
-* wschmidt@sumologic.com
+*    wschmidt@sumologic.com
 
-* wayne.kirk.schmidt@gmail.com
+*    wayne.kirk.schmidt@gmail.com
 
 I will provide "best effort" fixes and extend the scripts.
