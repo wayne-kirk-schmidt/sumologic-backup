@@ -68,7 +68,7 @@ ARGS = PARSER.parse_args()
 
 DELAY_TIME = .5
 
-CONTENTMAP = dict()
+CONTENTMAP = {}
 
 REPORTTAG = 'sumologic-backup'
 
@@ -84,7 +84,7 @@ def resolve_option_variables():
     """
 
     if ARGS.verbose > 6:
-        print('Validating: {}'.format('supplied variables'))
+        print('Validating: supplied variables')
 
     if ARGS.MY_SECRET:
         (keyname, keysecret) = ARGS.MY_SECRET.split(':')
@@ -102,7 +102,7 @@ def resolve_config_variables():
     """
 
     if ARGS.verbose > 6:
-        print('Validating: {}'.format('configuration file variables'))
+        print('Validating: file variables')
 
     if ARGS.CONFIG:
         cfgfile = os.path.abspath(ARGS.CONFIG)
@@ -145,7 +145,7 @@ def initialize_variables():
         my_key = os.environ['SUMO_KEY']
 
     except KeyError as myerror:
-        print('Environment Variable Not Set :: {} '.format(myerror.args[0]))
+        print(f'Environment Variable Not Set :: {myerror.args[0]}')
 
     return my_uid, my_key
 
@@ -187,7 +187,7 @@ def build_details(source, parent_name, parent_oid_path, child):
         for content_child in content_list['children']:
             build_details(source, my_path_name, my_oid_path, content_child)
 
-    CONTENTMAP[uid_myself] = dict()
+    CONTENTMAP[uid_myself] = {}
     CONTENTMAP[uid_myself]["parent"] = uid_parent
     CONTENTMAP[uid_myself]["myself"] = uid_myself
     CONTENTMAP[uid_myself]["name"] = my_name
@@ -200,24 +200,24 @@ def create_manifest(manifestdir):
     """
     Now display the output we want from the CONTENTMAP data structure we made.
     """
-    manifestname = '{}.csv'.format(REPORTTAG)
+    manifestname = f'{REPORTTAG}.csv'
     manifestfile = os.path.join(manifestdir, manifestname)
 
-    with open(manifestfile, 'a') as manifestobject:
-        manifestobject.write('{},{},{},{},{},{},{}\n'.format("uid_myself", "uid_parent", \
-                             "my_type", "my_name", "my_path", "backup_oid", "backup_path"))
+    with open(manifestfile, 'a', encoding='utf8') as manifestobject:
+        my_header = "uid_myself,uid_parent,my_type,my_name,my_path,backup_oid,backup_path"
+        manifestobject.write(f'{my_header}\n')
 
-        for content_item in CONTENTMAP:
-            uid_parent = CONTENTMAP[content_item]["parent"]
-            uid_myself = CONTENTMAP[content_item]["myself"]
-            my_name = CONTENTMAP[content_item]["name"]
-            my_path = CONTENTMAP[content_item]["path"]
-            my_type = CONTENTMAP[content_item]["type"]
-            my_backupname = CONTENTMAP[content_item]["backupname"]
-            my_backuppath = CONTENTMAP[content_item]["backuppath"]
+        for ckv in CONTENTMAP:
+            content_item, _content_value = ckv[0], ckv[1]
+            uip = CONTENTMAP[content_item]["parent"]
+            uim = CONTENTMAP[content_item]["myself"]
+            myn = CONTENTMAP[content_item]["name"]
+            myp = CONTENTMAP[content_item]["path"]
+            myt = CONTENTMAP[content_item]["type"]
+            mybn = CONTENTMAP[content_item]["backupname"]
+            mybp = CONTENTMAP[content_item]["backuppath"]
 
-            manifestobject.write('{},{},{},\"{}\",\"{}\",{},{}\n'.format(uid_myself, uid_parent, \
-                                 my_type, my_name, my_path, my_backupname, my_backuppath))
+            manifestobject.write(f'{uim},{uip},{myt},\"{myn}\",\"{myp}\",{mybn},{mybp}')
 
 def create_personal_folder_content_map(source):
     """
@@ -231,7 +231,7 @@ def create_personal_folder_content_map(source):
     uid_myself = content_list['id']
     uid_parent = content_list['parentId']
 
-    CONTENTMAP[uid_myself] = dict()
+    CONTENTMAP[uid_myself] = {}
     CONTENTMAP[uid_myself]["parent"] = uid_parent
     CONTENTMAP[uid_myself]["myself"] = uid_myself
     CONTENTMAP[uid_myself]["name"] = parent_name
@@ -264,14 +264,13 @@ def create_content_map(source):
 
         gfolder_result = source.get_globalfolder_job_result(gfolder_job)
         for child in gfolder_result['data']:
-            print(child)
             if child['name'] == 'Personal':
                 create_personal_folder_content_map(source)
             else:
                 if child['itemType'] == 'Folder':
                     parent_name = ""
                     parent_base_path = child['id']
-                    child_name = child['name']
+                    _child_name = child['name']
                     uid_myself = child['id']
                     uid_parent = child['parentId']
                     build_details(source, parent_name, parent_base_path, child)
@@ -281,7 +280,7 @@ def create_content_map(source):
                     my_name = child['name']
                     my_type = child['itemType']
 
-                    CONTENTMAP[uid_myself] = dict()
+                    CONTENTMAP[uid_myself] = {}
                     CONTENTMAP[uid_myself]["parent"] = uid_parent
                     CONTENTMAP[uid_myself]["myself"] = uid_myself
                     CONTENTMAP[uid_myself]["name"] = my_name
@@ -297,7 +296,8 @@ def create_backup_folders(backups):
     This creates the intermediary directories so we can archive content an element at a time
     """
 
-    for content_item in CONTENTMAP:
+    for ckv in CONTENTMAP:
+        content_item, _content_value = ckv[0], ckv[1]
         backup_type = CONTENTMAP[content_item]["type"]
         backup_path = CONTENTMAP[content_item]["backuppath"]
         if backup_type == 'Folder':
@@ -309,7 +309,8 @@ def backup_content(source,backupdir):
     Runs through CONTENTMAP again this time exporting the content into an appropriate location
     """
 
-    for content_item in CONTENTMAP:
+    for ckv in CONTENTMAP:
+        content_item, _content_value = ckv[0], ckv[1]
 
         backup_type = CONTENTMAP[content_item]["type"]
         contentid = CONTENTMAP[content_item]["myself"]
@@ -327,22 +328,19 @@ def backup_content(source,backupdir):
             exportresult = source.get_myfolder(contentid)
 
         if ARGS.verbose > 4:
-            print('Exporting: {} - {}'.format(contentid, backuptarget))
+            print(f'Exporting: {contentid} - {backuptarget}')
 
-        ##### print(exportresult)
-        ##### time.sleep(1)
-
-        with open (backuptarget, "w") as backupobject:
+        with open (backuptarget, "w", encoding='utf8') as backupobject:
             backupobject.write(json.dumps(exportresult) + '\n')
 
 def create_zipfile(backupdir):
     """
     Create the zipfile from the backup directory
     """
-    targetzipfile = '{}/{}.{}.{}.zip'.format(backupdir, REPORTTAG, DATESTAMP, TIMESTAMP )
+    targetzipfile = f'{backupdir}/{REPORTTAG}.{DATESTAMP}.{TIMESTAMP}.zip'
 
     if ARGS.verbose > 4:
-        print('Creating: zipfile {}'.format(targetzipfile))
+        print(f'Creating: zipfile {targetzipfile}')
 
     with zipfile.ZipFile(targetzipfile, 'w') as zipobject:
         for foldername, _subfolders, filenames in os.walk(backupdir):
@@ -397,7 +395,7 @@ class SumoApiClient():
     The class includes the HTTP methods, cmdlets, and init methods
     """
 
-    def __init__(self, access_id, access_key, endpoint=None, cookieFile='cookies.txt'):
+    def __init__(self, access_id, access_key, endpoint=None, cookie_file='cookies.txt'):
         """
         Initializes the Sumo Logic object
         """
@@ -405,7 +403,7 @@ class SumoApiClient():
         self.session.auth = (access_id, access_key)
         self.session.headers = {'content-type': 'application/json', \
             'accept': 'application/json'}
-        cookiejar = http.cookiejar.FileCookieJar(cookieFile)
+        cookiejar = http.cookiejar.FileCookieJar(cookie_file)
         self.session.cookies = cookiejar
         if endpoint is None:
             self.endpoint = self._get_endpoint()

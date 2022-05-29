@@ -29,7 +29,6 @@ import configparser
 import datetime
 import os
 import sys
-import urllib.request
 
 sys.dont_write_bytecode = 1
 
@@ -45,10 +44,10 @@ PARSER.add_argument("-i", "--initialize", action='store_true', default=False, \
 
 ARGS = PARSER.parse_args(args=None if sys.argv[1:] else ['--help'])
 
-DEFAULTMAP = list()
+DEFAULTMAP = []
 DEFAULTMAP.append('ip')
 MAPLIST = DEFAULTMAP
-FUSION = dict()
+FUSION = {}
 
 SRCTAG = 'sumologic-backup'
 
@@ -86,10 +85,10 @@ def persist_config_file(config):
 
     starter_config = os.path.join( VARTMPDIR, SRCTAG + ".initial.cfg")
 
-    with open(starter_config, 'w') as configfile:
+    with open(starter_config, 'w', encoding='utf8') as configfile:
         config.write(configfile)
 
-    print('Written script config: {}'.format(starter_config))
+    print(f'Written script config: {starter_config}')
 
 def display_config_file():
     """
@@ -100,12 +99,12 @@ def display_config_file():
         my_config = configparser.ConfigParser()
         my_config.optionxform = str
         my_config.read(cfg_file)
-        print('### Contents: {} ###\n'.format(cfg_file))
+        print(f'### Contents: {cfg_file} ###\n')
         for cfgitem in dict(my_config.items('Default')):
             cfgvalue = my_config.get('Default', cfgitem)
-            print('{} = {}'.format(cfgitem, cfgvalue))
+            print(f'{cfgitem} = {cfgvalue}')
     else:
-        print('Unable to find: {}'.format(cfg_file))
+        print(f'Unable to find: {cfg_file}')
 
 def main():
     """
