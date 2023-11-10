@@ -1,0 +1,75 @@
+repo_name: wayne-kirk-schmidt/sumologic-backup
+report_id: b8e06b52160be76aac5980f0c46cd894
+repo_type: Public
+timestamp: '2023-11-10T02:45:18+00:00'
+requested_by: wks-sumo-logic
+provider: github
+branch: main
+detected_tools_count: 6
+tools:
+- name: Python
+  description: A clear and powerful object-oriented programming language, comparable
+    to Perl, Ruby, Scheme, or Java.
+  website_url: https://www.python.org
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/993/pUBY5pVj.png
+  detection_source: Repo Metadata
+- name: Git
+  description: Fast, scalable, distributed revision control system
+  website_url: http://git-scm.com/
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Version Control System
+  image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source: Repo Metadata
+- name: PyPI
+  description: A repository of software for the Python programming language
+  website_url: https://pypi.org/
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Hosted Package Repository
+  image_url: https://img.stackshare.io/service/12572/-RIWgodF_400x400.jpg
+  detection_source: Pipfile
+  last_updated_by: Wayne Schmidt
+  last_updated_on: 2022-04-18 03:36:43.000000000 Z
+- name: argparse
+  description: Python command-line parsing library
+  package_url: https://pypi.org/argparse
+  license: Python-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19871/default_d05f6f09935776629f62e8aed365805502c14921.png
+  detection_source: Pipfile
+  last_updated_by: Wayne Schmidt
+  last_updated_on: 2022-04-18 03:36:43.000000000 Z
+- name: configparser
+  description: Updated configparser from Python 3.7 for Python 2.6+
+  package_url: https://pypi.org/configparser
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19879/default_2270bfab784e3d2c2d999d26b11ee478a9dad238.png
+  detection_source: Pipfile
+  last_updated_by: Wayne Schmidt
+  last_updated_on: 2022-04-18 03:36:43.000000000 Z
+- name: requests
+  description: Python HTTP for Humans
+  package_url: https://pypi.org/requests
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19826/default_d7c684bf2673f008a9f02ac93901229297a22d7e.png
+  detection_source: Pipfile
+  last_updated_by: Wayne Schmidt
+  last_updated_on: 2022-04-18 03:36:43.000000000 Z
